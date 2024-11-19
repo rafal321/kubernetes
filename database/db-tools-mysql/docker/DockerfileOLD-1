@@ -1,0 +1,32 @@
+FROM ubuntu:24.04
+
+# Set environment variables
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get upgrade -y && \
+    apt-get install unzip tree htop curl wget telnet net-tools vim python3 tmux jq sudo bat -y
+
+RUN echo "ubuntu ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/sudoers_custom
+RUN echo "PS1='\[\033[0;31m\]\u@\h\[\033[00m\]:\[\033[01;94m\]\W\[\033[00m\]\# '" >> /root/.bashrc
+
+# AWS set up
+WORKDIR /tmp
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && unzip awscliv2.zip && ./aws/install
+
+# MySQL setup
+RUN apt-get install mysql-shell -y
+RUN apt-get install mysql-client -y
+
+# Set up user-specific environment
+WORKDIR /home/ubuntu
+USER ubuntu
+RUN echo "PS1='\[\033[0;95m\]\u@\h\[\033[00m\]:\[\033[01;94m\]\W\[\033[00m\]\$ '" >> /home/ubuntu/.bashrc
+RUN echo "complete -C '/tmp/aws/dist/aws_completer' aws" > RK_README.md
+CMD ["sleep", "120"]
+
+
+
+
+# RUN useradd -m rk-user && usermod -aG sudo rk-user && usermod -s /bin/bash rk-user
+
+# 
+# https://github.com/docker-library/postgres/blob/69bc540ecfffecce72d49fa7e4a46680350037f9/9.6/Dockerfile#L21-L24
