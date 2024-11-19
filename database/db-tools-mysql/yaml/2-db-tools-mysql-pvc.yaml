@@ -10,4 +10,4 @@ spec:
   storageClassName: gp3-exp
   resources:
     requests:
-      storage: 5Gi
+      storage: 2Gi
