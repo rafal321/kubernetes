@@ -3,7 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: rk-client
-  namespace: mysql-client
+  namespace: db-tools
 spec:
   replicas: 1
   selector:

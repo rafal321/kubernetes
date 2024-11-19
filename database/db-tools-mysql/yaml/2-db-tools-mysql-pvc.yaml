@@ -3,7 +3,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: rk-client-pvc         #x1
-  namespace: mysql-client
+  namespace: db-tools
 spec:
   accessModes:
   - ReadWriteOnce
