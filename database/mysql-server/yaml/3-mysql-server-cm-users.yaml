@@ -1,14 +1,16 @@
 ---
+        # Example password: P@ssword123
+        # Example user:     user_2, user_3
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: users       #x3a        # Example password: P@ssword123
+  name: users       #x3a
   namespace: mysql-server
-data:                           # Example user:     user_2
+data:
   create-user.sql: |-
+    CREATE USER 'user_2'@'%.svc.cluster.local' IDENTIFIED BY 'P@ssword123';  
+    GRANT ALL PRIVILEGES ON *.* TO 'user_2'@'10.%';
     CREATE USER 'user_3'@'%.svc.cluster.local' IDENTIFIED BY 'P@ssword123';  
-    GRANT ALL PRIVILEGES ON *.* TO 'user_2'@'%.svc.cluster.local';
-    CREATE USER 'user_3'@'%.svc.cluster.local' IDENTIFIED BY 'P@ssword123';  
-    GRANT ALL PRIVILEGES ON *.* TO 'user_3'@'%.svc.cluster.local';
+    GRANT ALL PRIVILEGES ON *.* TO 'user_3'@'10.%';
 
 
