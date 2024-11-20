@@ -25,4 +25,6 @@ SHOW GLOBAL VARIABLES LIKE 'local_infile';
 SET GLOBAL local_infile = 'ON';
 SHOW GLOBAL VARIABLES LIKE 'local_infile';
 util.loadDump("airport-db", {threads: 2, deferTableIndexes: "all", ignoreVersion: true});
+[client]
+local_infile=1
 ```
