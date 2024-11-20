@@ -61,16 +61,21 @@ spec:
           mountPath: /var/lib/mysql
         - name: config-volume
           mountPath: /etc/mysql/conf.d
+        - name: mysql-inituser    #x3
+          mountPath: /docker-entrypoint-initdb.d         
       volumes:
       - name: mysql-persistent-storage
         persistentVolumeClaim:
           claimName: mysql-server-pvc
       - name: config-volume
         configMap:
-          name: mysql-server-cm      #x1
+          name: mysql-server-cm   #x1
           items:
           - key: my.cnf           # key from configmap
             path: my.cnf          # filename created
+      - name: mysql-inituser      #x3
+        configMap:
+          name: users             #x3a
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
