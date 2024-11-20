@@ -33,17 +33,17 @@ spec:
         image: mysql:8                  # defaults to >> 8.4.2 MySQL Community Server - GPL
         env:
         - name: MYSQL_ROOT_PASSWORD
-          valueFrom:                               #value: "sakila[]1"
+          valueFrom:
             secretKeyRef:
               name: mysql-server-secrets
               key: mysqlRootPassword
         - name: MYSQL_USER
-          valueFrom:                      #         value: "ibe"
+          valueFrom:
             secretKeyRef:
               name: mysql-server-secrets
               key: mysqlUser          
         - name: MYSQL_PASSWORD
-          valueFrom:                      #         value: "admin"
+          valueFrom:
             secretKeyRef:
               name: mysql-server-secrets
               key: mysqlPassword 

@@ -1,0 +1,13 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: users       #x3a        # Example password: P@ssword123
+data:                           # Example user:     user_2
+  create-user.sql: |-
+    CREATE USER 'user_3'@'%.svc.cluster.local' IDENTIFIED BY 'P@ssword123';  
+    GRANT ALL PRIVILEGES ON *.* TO 'user_2'@'%.svc.cluster.local';
+    CREATE USER 'user_3'@'%.svc.cluster.local' IDENTIFIED BY 'P@ssword123';  
+    GRANT ALL PRIVILEGES ON *.* TO 'user_3'@'%.svc.cluster.local';
+
+
