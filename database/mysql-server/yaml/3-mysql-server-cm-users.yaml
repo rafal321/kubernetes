@@ -12,5 +12,7 @@ data:
     GRANT ALL PRIVILEGES ON *.* TO 'user_2'@'10.%';
     CREATE USER 'user_3'@'%.svc.cluster.local' IDENTIFIED BY 'P@ssword123';  
     GRANT ALL PRIVILEGES ON *.* TO 'user_3'@'10.%';
+    CREATE USER 'user_bkp'@'10.%' IDENTIFIED BY 'P@ssword123';
+    GRANT SELECT, LOCK TABLES, SHOW VIEW, EVENT, TRIGGER ON *.* TO 'user_bkp'@'10.%';
 
 
