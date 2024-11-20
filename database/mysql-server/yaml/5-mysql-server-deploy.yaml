@@ -3,7 +3,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mysql-deployment5v3
+  name: mysql-deploy
   namespace: mysql-server
 spec:
   replicas: 1
