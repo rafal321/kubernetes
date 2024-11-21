@@ -76,14 +76,12 @@ spec:
 ERROR: <br>
 Handler 'on_pod_create' failed temporarily: Sidecar of mycluster-0 is not yet configured
 
-
-
 [████████████████████████████████████████████████]
 MySQL 8.2 is what we were all waiting for for Kubernetes with Transparent Read/Write Splitting <br>
-https://sredevops.org/en/mysql-8-2-is-what-we-were-all-waiting-for-for-kubernetes-with-transparent-read-write-splitting/
-https://github.com/mysql/mysql-operator/tree/8.4.1-2.1.4/deploy?ref=sredevops.org
-https://dev.mysql.com/downloads/mysql/     8.4.2 LTS
-Raf: deploy direcly from github
+https://sredevops.org/en/mysql-8-2-is-what-we-were-all-waiting-for-for-kubernetes-with-transparent-read-write-splitting/  <br>
+https://github.com/mysql/mysql-operator/tree/8.4.1-2.1.4/deploy?ref=sredevops.org  <br>
+https://dev.mysql.com/downloads/mysql/     8.4.2 LTS  <br>
+Raf: deploy direcly from github <br>
 [████████████████████████████████████████████████]
 
 Troubleshooting Common Issues <br>
@@ -101,4 +99,3 @@ select MEMBER_HOST, MEMBER_STATE, MEMBER_ROLE from performance_schema.replicatio
 select @@gtid_executed;
 SELECT * FROM information_schema.processlist WHERE INFO = 'Group replication applier module' ;
 ```
-[████████████████████████████████████████████████]
