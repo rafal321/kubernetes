@@ -1,4 +1,5 @@
 ################################################
+```
 # [0] create namespace
 kubectl create namespace mysql-cluster
 kubectl config set-context --current --namespace mysql-cluster
@@ -24,10 +25,10 @@ kubectl get secret mypwds -oyaml |y
 
 # [4] deploy cluster                        (namespaced)
 kubectl apply -f mycluster.yaml
+```
 
-
-More settings s3 etc
-# https://stackoverflow.com/questions/76780191/how-to-initialize-innodb-cluster-created-via-kubernetes-mysql-operator-through-s
+More settings s3 etc <br>
+https://stackoverflow.com/questions/76780191/how-to-initialize-innodb-cluster-created-via-kubernetes-mysql-operator-through-s
 ```
 apiVersion: mysql.oracle.com/v2
 kind: InnoDBCluster
@@ -72,22 +73,22 @@ spec:
           endpoint: https://s3-endpoint
 ```
 
-ERROR:
+ERROR: <br>
 Handler 'on_pod_create' failed temporarily: Sidecar of mycluster-0 is not yet configured
 
 
 
-[██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████]
-MySQL 8.2 is what we were all waiting for for Kubernetes with Transparent Read/Write Splitting
+[████████████████████████████████████████████████]
+MySQL 8.2 is what we were all waiting for for Kubernetes with Transparent Read/Write Splitting <br>
 https://sredevops.org/en/mysql-8-2-is-what-we-were-all-waiting-for-for-kubernetes-with-transparent-read-write-splitting/
 https://github.com/mysql/mysql-operator/tree/8.4.1-2.1.4/deploy?ref=sredevops.org
 https://dev.mysql.com/downloads/mysql/     8.4.2 LTS
 Raf: deploy direcly from github
-[████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████]
+[████████████████████████████████████████████████]
 
-Troubleshooting Common Issues
+Troubleshooting Common Issues <br>
 https://docs.vmware.com/en/VMware-SQL-with-MySQL-for-Kubernetes/1.10/vmware-mysql-k8s/troubleshooting.html
-
+```
 select MEMBER_HOST, MEMBER_STATE, MEMBER_ROLE from performance_schema.replication_group_members;
 +------------------------------------------------------------------------+--------------+-------------+
 | MEMBER_HOST                                                            | MEMBER_STATE | MEMBER_ROLE |
@@ -99,4 +100,5 @@ select MEMBER_HOST, MEMBER_STATE, MEMBER_ROLE from performance_schema.replicatio
 
 select @@gtid_executed;
 SELECT * FROM information_schema.processlist WHERE INFO = 'Group replication applier module' ;
-[████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████]
+```
+[████████████████████████████████████████████████]
