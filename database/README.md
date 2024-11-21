@@ -14,6 +14,9 @@ mysql -uroot -hmysql-server-svc.mysql-server.svc.cluster.local -pP@ssword123 -Bs
 A MySQL backup and recovery tutorial on K8s using the MySQL Operator for Kubernetes <br>
 https://severalnines.com/blog/mysql-backup-recovery-k8s/
 
+OperatorHub.io <br>
+https://operatorhub.io/?keyword=mysql
+
 # ---------------------------------<br>
 Sample DB <br>
 wget https://downloads.mysql.com/docs/sakila-db.tar.gz <br>
@@ -28,3 +31,4 @@ util.loadDump("airport-db", {threads: 2, deferTableIndexes: "all", ignoreVersion
 [client]
 local_infile=1
 ```
+
