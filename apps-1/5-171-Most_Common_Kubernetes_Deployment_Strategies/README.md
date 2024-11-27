@@ -8,10 +8,11 @@ kubectl run curl --image=alpine/curl:8.2.1 -n kube-system -i --tty --rm -- sh
 for i in `seq 1 1000`; do curl myapp.default:8181/version; echo ""; sleep 1; done
 ```
 kubectl rollout --help<br>
-Available Commands:<br>
-  history       View rollout history
-  pause         Mark the provided resource as paused
-  restart       Restart a resource
-  resume        Resume a paused resource
-  status        Show the status of the rollout
-  undo          Undo a previous rollout
+kubectl rollout pause deployment myapp<br>
+kubectl rollout resume deployment myapp<br>
+kubectl rollout restart deployment myapp<br>
+etc..
+
+On prod wo would do a commit and let argocd to take care of roll-back
+## --- Recreate -------------
+Good in development with limited resources

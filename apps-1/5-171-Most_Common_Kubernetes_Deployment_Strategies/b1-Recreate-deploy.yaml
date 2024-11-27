@@ -9,13 +9,8 @@ metadata:
 spec:
   revisionHistoryLimit: 3
   strategy:
-    type: RollingUpdate
-    rollingUpdate:
-    #  maxUnavailable: 25%
-    #  maxSurge: 25%
-      maxUnavailable: 1
-      maxSurge: 1
-  replicas: 16
+    type: Recreate
+  replicas: 8
   selector:
     matchLabels:
       app: myapp
