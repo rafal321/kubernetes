@@ -1,0 +1,50 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mysqldump-job
+spec:
+  backoffLimit: 3             # No of retries      Err: BackoffLimitExceded
+  activeDeadlineSeconds: 2400 # Max how long job should run Err: Incomplete
+  ttlSecondsAfterFinished: 120
+  completions: 1
+  parallelism: 1
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: mysqldump
+        image: therafk/mysqldump-cj:0.1
+        env:
+        - name: S3BUCKET
+          valueFrom:
+            configMapKeyRef:
+              key: s3bucket
+              name: mysqldump-cm
+        - name: S3PATH
+          valueFrom:
+            configMapKeyRef:
+              key: s3path
+              name: mysqldump-cm
+        - name: DBUSER
+          valueFrom:
+            configMapKeyRef:
+              key: dbuser
+              name: mysqldump-cm
+        - name: DBPASS
+          valueFrom:
+            secretKeyRef:
+              key: dbpass
+              name: mysqldump-secret
+        - name: DBHOST
+          valueFrom:
+            configMapKeyRef:
+              key: dbhost
+              name: mysqldump-cm
+        command: ["sh", "db_bkp.sh"]
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "900m"

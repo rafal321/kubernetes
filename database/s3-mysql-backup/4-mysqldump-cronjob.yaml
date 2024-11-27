@@ -1,0 +1,55 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: mysqldump-cj
+spec:
+  schedule: "*/10 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 180
+      activeDeadlineSeconds: 2400
+      backoffLimit: 3
+      template:
+        spec:
+          containers:
+            - name: mysqldump
+              image: therafk/mysqldump-cj:0.1
+              env:
+              - name: S3BUCKET
+                valueFrom:
+                  configMapKeyRef:
+                    key: s3bucket
+                    name: mysqldump-cm
+              - name: S3PATH
+                valueFrom:
+                  configMapKeyRef:
+                    key: s3path
+                    name: mysqldump-cm
+              - name: DBUSER
+                valueFrom:
+                  configMapKeyRef:
+                    key: dbuser
+                    name: mysqldump-cm
+              - name: DBPASS
+                valueFrom:
+                  secretKeyRef:
+                    key: dbpass
+                    name: mysqldump-secret
+              - name: DBHOST
+                valueFrom:
+                  configMapKeyRef:
+                    key: dbhost
+                    name: mysqldump-cm
+              command: ["sh", "db_bkp.sh"]
+              resources:
+                requests:
+                  memory: "64Mi"
+                  cpu: "100m"
+                limits:
+                  memory: "256Mi"
+                  cpu: "900m"
+          restartPolicy: OnFailure

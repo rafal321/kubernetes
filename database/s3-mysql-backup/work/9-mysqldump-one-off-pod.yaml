@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mysqldump-one-off-pod
+spec:
+  restartPolicy: Never
+  containers:
+  - name: mysqldump
+    image: therafk/train-schedule:12.1
+    env:
+    - name: S3BUCKET
+      valueFrom:
+        configMapKeyRef:
+          key: s3bucket
+          name: mysqldump-cm
+    - name: S3PATH
+      valueFrom:
+        configMapKeyRef:
+          key: s3path
+          name: mysqldump-cm
+    - name: DBUSER
+      valueFrom:
+        configMapKeyRef:
+          key: dbuser
+          name: mysqldump-cm
+    - name: DBPASS
+      valueFrom:
+        secretKeyRef:
+          key: dbpass
+          name: mysqldump-secret
+    - name: DBHOST
+      valueFrom:
+        configMapKeyRef:
+          key: dbhost
+          name: mysqldump-cm
+    command: ["sleep", "infinity"]
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "100m"
+      limits:
+        memory: "256Mi"
+        cpu: "500m"
+

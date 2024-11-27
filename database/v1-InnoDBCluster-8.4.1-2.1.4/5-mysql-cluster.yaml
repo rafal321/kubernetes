@@ -2,11 +2,12 @@
 apiVersion: mysql.oracle.com/v2
 kind: InnoDBCluster
 metadata:
-  name: mycluster-v1
+  name: mysql-cluster
+  namespace: mysql-cluster
 spec:
   version: "8.4.1"      # Server version: 8.4.1 MySQL Community Server - GPL
-  secretName: mypwds
-  instances: 3
+  secretName: mysql-secret
+  instances: 2
   router:
     version: "8.4.1"    # Server version: 8.4.1-router MySQL Community Server - GPL
     instances: 1
@@ -16,7 +17,7 @@ spec:
     storageClassName: "gp3-exp"
     resources:
       requests:
-        storage: 10Gi
+        storage: 4Gi
   backupProfiles:
     - name: s3-backup
       dumpInstance:
@@ -49,13 +50,15 @@ spec:
     log_bin_trust_function_creators=1
     binlog_expire_logs_seconds=14400  # 4hrs
     innodb_buffer_pool_size=1G
+    max_allowed_packet=512M
     
 
 
 #=========================================================================================
 # kubectl rollout restart statefulset <statefulset-name>        to trigger a rolling update. 
 
-
+# max_allowed_packet=1073741824
+# max_allowed_packet=512M   increased from default 64M (67108864)
 
 # kubectl -n mysql-client exec -it rk- -- bash
 # cat <<EOF >> .my.cnf

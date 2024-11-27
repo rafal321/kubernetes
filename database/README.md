@@ -21,7 +21,8 @@ https://operatorhub.io/?keyword=mysql
 Sample DB <br>
 wget https://downloads.mysql.com/docs/sakila-db.tar.gz <br>
 wget https://downloads.mysql.com/docs/world-db.tar.gz <br>
-wget https://downloads.mysql.com/docs/airport-db.tar.gz <br>
+wget https://downloads.mysql.com/docs/menagerie-db.tar.gz <br>
+wget https://downloads.mysql.com/docs/airport-db.tar.gz && tar -xzf airport-db.tar.gz<br>
 
 ```
 SHOW GLOBAL VARIABLES LIKE 'local_infile';
@@ -31,4 +32,7 @@ util.loadDump("airport-db", {threads: 2, deferTableIndexes: "all", ignoreVersion
 [client]
 local_infile=1
 ```
-
+Namespace stuck on terminating state - fix:
+```
+NS=`kubectl get ns |grep Terminating | awk 'NR==1 {print $1}'` && kubectl get namespace "$NS" -o json   | tr -d "\n" | sed "s/\"finalizers\": \[[^]]\+\]/\"finalizers\": []/"   | kubectl replace --raw /api/v1/namespaces/$NS/finalize -f -
+```

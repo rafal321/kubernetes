@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysqldump-cm
+immutable: false
+data:
+  s3bucket: "raf-ojt-bucket"
+  s3path: "aaa-path"
+  dbuser: "root"
+  dbhost: "mysql-cluster.mysql-cluster.svc.cluster.local"
+
+# cm as ENV varibles require restart
+# cm as volumes, update automatically

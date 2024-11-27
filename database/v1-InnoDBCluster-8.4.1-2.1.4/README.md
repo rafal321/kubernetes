@@ -76,13 +76,13 @@ spec:
 ERROR: <br>
 Handler 'on_pod_create' failed temporarily: Sidecar of mycluster-0 is not yet configured
 
-[████████████████████████████████████████████████]
+[████████████████████████████████████████████████] <br>
 MySQL 8.2 is what we were all waiting for for Kubernetes with Transparent Read/Write Splitting <br>
 https://sredevops.org/en/mysql-8-2-is-what-we-were-all-waiting-for-for-kubernetes-with-transparent-read-write-splitting/  <br>
 https://github.com/mysql/mysql-operator/tree/8.4.1-2.1.4/deploy?ref=sredevops.org  <br>
 https://dev.mysql.com/downloads/mysql/     8.4.2 LTS  <br>
 Raf: deploy direcly from github <br>
-[████████████████████████████████████████████████]
+[████████████████████████████████████████████████] <br>
 
 Troubleshooting Common Issues <br>
 https://docs.vmware.com/en/VMware-SQL-with-MySQL-for-Kubernetes/1.10/vmware-mysql-k8s/troubleshooting.html
@@ -99,3 +99,14 @@ select MEMBER_HOST, MEMBER_STATE, MEMBER_ROLE from performance_schema.replicatio
 select @@gtid_executed;
 SELECT * FROM information_schema.processlist WHERE INFO = 'Group replication applier module' ;
 ```
+PERCONA <br>
+Best Practices of Running Databases on Kubernetes (Peter Zaitsev)<br>
+https://youtu.be/Yo8E2YyiO9s?si=KzRwAqJliCJPbNOV
+
+Running MySQL on K8s. Deployment, Scaling, Backups and advanced configuration - Ananias Tsalouchidis<br>
+https://www.youtube.com/watch?v=fVbtNxMrpgI   (11:30) - Part II to 
+
+
+
+- END -
+
