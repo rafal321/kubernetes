@@ -1,0 +1,36 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argo-squares-dep-g
+  namespace: argo-squares
+  labels:
+    app: argo-squares
+    color: green
+spec:
+  replicas: 2
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: argo-squares
+      color: green
+  template:
+    metadata:
+      labels:
+        app: argo-squares
+        color: green
+    spec:
+      containers:
+      - name: argo-squares
+        image: argoproj/rollouts-demo:green
+           # https://hub.docker.com/r/argoproj/rollouts-demo/tags
+           # we can test autoscaler as with this settings bad-purple creates a lot of load 
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            cpu: "5m"
+            memory: "4Mi"
+          limits:
+            cpu: "10m"
+            memory: "12Mi"

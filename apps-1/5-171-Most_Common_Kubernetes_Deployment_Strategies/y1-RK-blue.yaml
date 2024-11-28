@@ -2,31 +2,31 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: green-myapp
+  name: blue-myapp
   namespace: default
 spec:
   replicas: 2
   revisionHistoryLimit: 2
   selector:
     matchLabels:
-      app: myapp        # <<
-      replica: green    # <<
+      app: myapp      # <<
+      replica: blue   # <<
   template:
     metadata:
       labels:
-        app: myapp      # <<
-        replica: green  # <<
+        app: myapp    # <<
+        replica: blue # <<
     spec:
       containers:
         - name: myapp
-        # image: therafk/apache2:g
-          image: therafk/httpd:2.2
+        # image: therafk/apache2:b      # <h1>-- BLUE | .....</h1>
+          image: therafk/httpd:1.1      # -- ver: |1.1|...|...||blue.|.....|.....|
           ports:
             - name: http
               containerPort: 80
           startupProbe:
             tcpSocket:
               port: 80
-            initialDelaySeconds: 2
+            initialDelaySeconds: 5
             periodSeconds: 5
           resources: {}
