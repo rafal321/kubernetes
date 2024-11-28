@@ -1,3 +1,5 @@
+Playlist: https://youtube.com/playlist?list=PLiMWaCMwGJXnHmccp2xlBENZ1xr4FpjXF&si=Ld6qHSqKqljG-HqX
+
 [5]	Most Common Kubernetes Deployment Strategies (Examples & Code)<br>
 https://youtu.be/lxc4EXZOOvE?si=rSrCbBn81bbpU-9C
 
@@ -15,4 +17,12 @@ etc..
 
 On prod wo would do a commit and let argocd to take care of roll-back
 ## --- Recreate -------------
-Good in development with limited resources
+Good in development with limited resources<br>
+when volumes are attached with accessModes: ReadWriteOnce 
+## --- Blue/Green -------------
+Using native kubernetes, we need to use labels<br>
+Even if you use Ingress it will nicely update your traffic<br>
+With Istio, setup is complicated. Since you need Istio, Prometheus, Graphana Flagger, etc.
+
+## --- Canary -------------
+just update spec.replica: X 

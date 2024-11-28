@@ -1,0 +1,17 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp-testing
+  namespace: default
+spec:
+  selector:
+    app: myapp      # <<
+    replica: green  # << 
+  ports:
+    - protocol: TCP
+      port: 8181
+      targetPort: http
+
+# we can have another (green) service for testing
+# before switch

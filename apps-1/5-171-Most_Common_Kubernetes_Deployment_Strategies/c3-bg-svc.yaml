@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp
+  namespace: default
+spec:
+  selector:
+    app: myapp      # <<
+    replica: blue   # <<  blue green switch here
+  ports:
+    - protocol: TCP
+      port: 8181
+      targetPort: http

@@ -2,22 +2,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: myapp
+  name: canary-myapp
   namespace: default
-  annotations:
-    kubernetes.io/change-cause: "change reason goes here"
 spec:
-  revisionHistoryLimit: 3
-  strategy:
-    type: Recreate
-  replicas: 8
+  replicas: 10   # << this does the job
   selector:
     matchLabels:
-      app: myapp
+      app: myapp    # << x1
   template:
     metadata:
       labels:
-        app: myapp
+        app: myapp    # << x1
     spec:
       containers:
         - name: myapp
@@ -28,6 +23,6 @@ spec:
           startupProbe:
             tcpSocket:
               port: 8181
-            initialDelaySeconds: 20   # to delay a bit
+            initialDelaySeconds: 20
             periodSeconds: 5
           resources: {}
