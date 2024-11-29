@@ -26,6 +26,8 @@ With Istio, setup is complicated. Since you need Istio, Prometheus, Graphana Fla
 ```
 kubectl run curl --image=alpine/curl:8.2.1 -n kube-system -i --tty --rm -- sh
 while true; do curl -s myapp.default:8181 | grep -e "--"; sleep 1; done
+# ---
+while sleep 3; do curl -sL applive.ops.perf.hosting.com | grep title; done
 ```
 ## --- Canary -------------
 just update spec.replica: X 
