@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: rk-client
+  name: db-tools-dp
   namespace: db-tools
 spec:
   replicas: 1
