@@ -1,0 +1,43 @@
+# --------- percona client example
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: percona-1-16
+#  annotations:
+#   scheduler.alpha.kubernetes.io/node-selector: tier=backend
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: s3-full-access-sa
+  namespace: percona-1-16
+---
+# kubectl run -i --rm --tty percona-client --image=percona:8.0 --restart=Never -- bash -il
+#apiVersion: apps/v1
+#kind: Deployment
+#metadata:
+#  name: percona-client-dep
+#  namespace: percona-1-16-1
+#spec:
+#  replicas: 1
+#  selector:
+#    matchLabels:
+#      app: percona-client
+#  template:
+#    metadata:
+#      labels:
+#        app: percona-client
+#    spec:
+#      containers:
+#      - name: percona-client
+#        image: percona:8.0
+#        command: ["bash", "-il"]
+#        tty: true
+#        stdin: true
+#        resources: {}
+---	  
+# To Access:
+# kubectl exec -it $(kubectl get pods -l "job-name=percona-client-job" -o jsonpath={.items[0].metadata.name}) -c percona-client -- bash
+
+

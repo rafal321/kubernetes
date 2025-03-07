@@ -28,11 +28,29 @@ wget https://downloads.mysql.com/docs/airport-db.tar.gz && tar -xzf airport-db.t
 SHOW GLOBAL VARIABLES LIKE 'local_infile';
 SET GLOBAL local_infile = 'ON';
 SHOW GLOBAL VARIABLES LIKE 'local_infile';
-util.loadDump("airport-db", {threads: 2, deferTableIndexes: "all", ignoreVersion: true});
+util.loadDump("airport-db", {threads: 1, deferTableIndexes: "all", ignoreVersion: true});
 [client]
 local_infile=1
+---
+    "prohibits use of LOCK TABLE/FLUSH TABLE"   
+set global pxc_strict_mode=PERMISSIVE;
+set global pxc_strict_mode=ENFORCING;
+
 ```
 Namespace stuck on terminating state - fix:
 ```
 NS=`kubectl get ns |grep Terminating | awk 'NR==1 {print $1}'` && kubectl get namespace "$NS" -o json   | tr -d "\n" | sed "s/\"finalizers\": \[[^]]\+\]/\"finalizers\": []/"   | kubectl replace --raw /api/v1/namespaces/$NS/finalize -f -
 ```
+Mysql8 deployment - sample<br>
+https://github.com/istio/istio/blob/master/samples/bookinfo/platform/kube/bookinfo-mysql.yaml
+
+
+
+
+## ==========================================================
+Running MySQL NDB Cluster in Kubernetes            “Network DataBase”
+https://youtu.be/71FhFvfOfvY?si=xrF3M_5cmPbcyqZx&t=660
+
+
+
+

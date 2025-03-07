@@ -6,6 +6,8 @@ metadata:
   namespace: db-tools
 spec:
   replicas: 1
+  strategy: 
+    type: Recreate  
   revisionHistoryLimit: 2
   selector:
     matchLabels:
@@ -24,9 +26,15 @@ spec:
                 operator: In
                 values:
                 - eu-west-1a
+      serviceAccountName: s3-full-access-sa
       containers:
       - name: rk-client
-        image: therafk/ubuntu:v15
+        image: therafk/ubuntu:v15.4
+        securityContext:    # required for mount-s3
+          privileged: true
+          capabilities:
+            add:
+              - SYS_ADMIN
         volumeMounts:
         - name: rk-client-claim-gp3   #x2
           mountPath: /db-data
@@ -49,4 +57,20 @@ spec:
 # mycluster.mysql-cluster.svc.cluster.local
 # <service-name>.<namespace>.svc.cluster.local
 
+
+    # securityContext:
+    #   privileged: true
+    #   capabilities:
+    #     add:
+    #       - SYS_ADMIN
+
+# kubectl -n db-tools rollout restart deployment db-tools-dp
+# AWS S3 Killedted
+
+#==ERROR===============================
+#https://uly.me/aws-s3-killedted
+#AWS S3 Killedted
+#    copy a large file from AWS S3 bucket to the smallest Amazon Lightsail instance
+# aws configure set default.s3.max_concurrent_requests 4
+#    The default is 10 which was too much for a small instance.
 

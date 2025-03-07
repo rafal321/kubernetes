@@ -1,0 +1,147 @@
+apiVersion: pxc.percona.com/v1
+kind: PerconaXtraDBCluster
+metadata:
+  name: cluster1
+  finalizers:
+    - percona.com/delete-pxc-pods-in-order
+#    - percona.com/delete-ssl
+#    - percona.com/delete-proxysql-pvc
+#    - percona.com/delete-pxc-pvc
+#  annotations:
+#    percona.com/issue-vault-token: "true"
+# =========================================================
+spec:
+  crVersion: 1.15.1
+  enableVolumeExpansion: true  # false
+  secretsName: cluster1-secrets
+  tls:
+    enabled: true
+  updateStrategy: SmartUpdate
+  upgradeOptions:
+    versionServiceEndpoint: https://check.percona.com
+    apply: disabled
+    schedule: "0 4 * * *"
+# =========================================================
+# outputs current configuration: kubectl get pxc cluster1 -oyaml | y
+  pxc:
+    size: 3
+    image: percona/percona-xtradb-cluster:8.0.36-28.1
+    autoRecovery: true
+#    schedulerName: mycustom-scheduler
+    readinessDelaySec: 15
+    livenessDelaySec: 600
+    configuration: |
+      [mysqld]
+      innodb_buffer_pool_size={{containerMemoryLimit * 3/4}}
+      max_connections=95
+      lower_case_table_names=1
+      long_query_time=5
+      slow_query_log=1
+      log_bin_trust_function_creators=1
+      innodb_print_all_deadlocks=1
+      # local_infile=ON
+    resources:              # _RAF_
+      requests:
+        memory: 2G
+        cpu: 400m
+      limits:
+        memory: 4G      # 3G -> innodb_buffer_pool_size | 3221225472
+        cpu: "2"
+    affinity:
+      antiAffinityTopologyKey: "kubernetes.io/hostname"
+    podDisruptionBudget:
+      maxUnavailable: 1
+    volumeSpec:
+      persistentVolumeClaim:
+        storageClassName: gp3-exp
+#        accessModes: [ "ReadWriteOnce" ]
+#        dataSource:
+#          name: new-snapshot-test
+#          kind: VolumeSnapshot
+#          apiGroup: snapshot.storage.k8s.io
+        resources:
+          requests:
+            storage: 8G
+    gracePeriod: 600
+# =========================================================
+  haproxy:
+    enabled: true
+    size: 2
+    image: percona/haproxy:2.8.5
+    imagePullPolicy: Always
+    resources:
+      requests:
+        memory: 1G
+        cpu: 200m
+      limits:
+        memory: 1.5G
+        cpu: 700m
+    affinity:
+      antiAffinityTopologyKey: "kubernetes.io/hostname"
+    podDisruptionBudget:
+      maxUnavailable: 1
+    gracePeriod: 30
+# =========================================================
+  logcollector:
+    enabled: true
+    image: percona/percona-xtradb-cluster-operator:1.15.1-logcollector-fluentbit3.1.4
+#    configuration: |
+#      [OUTPUT]
+#           Name  es
+#           Match *
+#           Host  192.168.2.3
+#           Port  9200
+#           Index my_index
+#           Type  my_type
+    resources:
+      requests:
+        memory: 100M
+        cpu: 200m
+  pmm:
+    enabled: false
+    image: percona/pmm-client:2.42.0
+    serverHost: monitoring-service
+#    serverUser: admin
+#    pxcParams: "--disable-tablestats-limit=2000"
+#    proxysqlParams: "--custom-labels=CUSTOM-LABELS"
+#    containerSecurityContext:
+#      privileged: false
+    resources:
+      requests:
+        memory: 150M
+        cpu: 200m
+  backup:
+#    allowParallel: true
+    image: percona/percona-xtradb-cluster-operator:1.15.1-pxc8.0-backup-pxb8.0.35
+    backoffLimit: 2
+    serviceAccountName: percona-xtradb-cluster-operator
+    pitr:
+      enabled: false
+      storageName: s3-eu-west # has to be valid, even if not in use?
+      timeBetweenUploads: 60
+      timeoutSeconds: 60
+    storages:
+      s3-eu-west:
+        type: s3
+        verifyTLS: true
+        resources:              # _RAF_ ???
+        s3:
+          bucket: raf-ojt-bucket/percona-backup-auto
+          credentialsSecret: cluster1-bkp-s3
+          region: eu-west-1
+      fs-pvc:
+        type: filesystem
+        volume:
+          persistentVolumeClaim:
+            storageClassName: gp3-exp
+            accessModes: [ "ReadWriteOnce" ]
+            resources:
+              requests:
+                storage: 12G
+    schedule:
+    # - name: "every-15-min-bkp"
+    #   schedule: "*/15 * * * *"
+    #   keep: 3
+    #   storageName: s3-eu-west
+
+# aws s3 ls s3://raf-ojt-bucket/percona-backup/ --recursive --human-readable --summarize | grep -E 'Total Objects|Total Size'

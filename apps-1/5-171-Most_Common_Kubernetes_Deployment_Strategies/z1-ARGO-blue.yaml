@@ -1,14 +1,14 @@
 ---
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: apps/v1             # x10
+kind: Deployment                # x11
 metadata:
-  name: argo-squares-dep-b
+  name: argo-squares-dep-b      # x12 - to target with HPA we use name not labels
   namespace: argo-squares
   labels:
     app: argo-squares
     color: blue
 spec:
-  replicas: 2
+  # replicas: 1    # you would never use replicas if horizontal pod autoscaller is in place - it may conflict with argocd etc
   revisionHistoryLimit: 2
   selector:
     matchLabels:
@@ -28,9 +28,14 @@ spec:
         ports:
         - containerPort: 8080
         resources:
-          requests:
+          requests:           # HPA takes requests into account when scaling not the limits
             cpu: "5m"
-            memory: "4Mi"
+            memory: "8Mi"    # got OOMKilled with 5Mi
           limits:
             cpu: "10m"
-            memory: "12Mi"
+            memory: "10Mi"
+
+# docker pull argoproj/rollouts-demo:slow-purple
+# docker pull argoproj/rollouts-demo:bad-purple
+# docker pull argoproj/rollouts-demo:purple
+# yellow purle green orange blue

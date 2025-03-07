@@ -1,0 +1,45 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: al2023-dp
+  namespace: db-tools
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: al2023
+  template:
+    metadata:
+      labels:
+        app: al2023
+    spec:
+      serviceAccountName: s3-full-access-sa      
+      containers:
+      - name: al2023
+        image: public.ecr.aws/amazonlinux/amazonlinux:2023
+        securityContext:    # required for mount-s3
+          privileged: true
+        resources:
+          requests:
+            cpu: "64m"
+            memory: "64Mi"
+          limits:
+            cpu: "900m"
+            memory: "500Mi"
+#       command: ["sleep","infinity"]
+        command: ["/bin/sh", "-c"]
+        args:
+        - |
+          dnf update -y && \
+          dnf install -y procps amazon-efs-utils mariadb105 tar gzip findutils && \
+          dnf install -y wget vim awscli less htop file && \
+          wget https://s3.amazonaws.com/mountpoint-s3-release/latest/x86_64/mount-s3.rpm && \
+          dnf install -y mount-s3.rpm && rm mount-s3.rpm && \
+          sleep infinity
+ 
+# kubectl run al2023 --image public.ecr.aws/amazonlinux/amazonlinux:2023 --command sleep infinity
+
+# alias ll='ls -lh' ; alias vi='vim' ; mkdir mount-s3 mount-raf
+

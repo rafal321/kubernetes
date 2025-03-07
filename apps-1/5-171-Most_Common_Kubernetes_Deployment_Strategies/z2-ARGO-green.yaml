@@ -8,7 +8,7 @@ metadata:
     app: argo-squares
     color: green
 spec:
-  replicas: 2
+# replicas: 2   # not with HPA
   revisionHistoryLimit: 2
   selector:
     matchLabels:
@@ -30,7 +30,7 @@ spec:
         resources:
           requests:
             cpu: "5m"
-            memory: "4Mi"
+            memory: "5Mi"
           limits:
             cpu: "10m"
             memory: "12Mi"

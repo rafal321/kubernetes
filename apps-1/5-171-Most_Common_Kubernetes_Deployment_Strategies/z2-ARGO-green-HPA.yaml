@@ -1,0 +1,28 @@
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: argo-squares-hpa-green
+  namespace: argo-squares
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1       # x10
+    kind: Deployment          # x11
+    name: argo-squares-dep-g  # x12
+  minReplicas: 2
+  maxReplicas: 50
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 85
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 85
+
+# kubectl get hpa |c 

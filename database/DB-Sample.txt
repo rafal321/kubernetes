@@ -1,0 +1,5 @@
+Mysql8 deployment - sample  2024-12-13
+https://github.com/istio/istio/blob/master/samples/bookinfo/platform/kube/bookinfo-mysql.yaml
+
+
+args: ["--default-authentication-plugin","mysql_native_password"]

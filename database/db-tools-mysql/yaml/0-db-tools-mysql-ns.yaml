@@ -1,0 +1,13 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: db-tools
+  labels:
+    name: db-tools
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: s3-full-access-sa
+  namespace: db-tools

@@ -1,0 +1,15 @@
+apiVersion: pxc.percona.com/v1
+kind: PerconaXtraDBClusterRestore
+metadata:
+# name: restore06
+  name: restore07
+spec:
+  pxcCluster: cluster1
+  backupSource:
+    verifyTLS: true
+#   destination: s3://raf-ojt-bucket/percona-backup/cluster1-2025-01-31-19:32:42-full         # RAF Manual
+    destination: s3://raf-ojt-bucket/percona-backup-auto/cluster1-2025-02-04-12:15:22-full    # RAF Auto
+    s3:
+      credentialsSecret: cluster1-bkp-s3
+      region: eu-west-1
+

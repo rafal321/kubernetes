@@ -5,7 +5,7 @@ metadata:
   name: mysql-cluster
   # namespace: mysql-cluster
 spec:
-  version: "8.4.1"      # Server version: 8.4.1 MySQL Community Server - GPL
+  version: "8.4.1"      # Server version: 8.4.1 MySQL Community Server - GPL    
   secretName: mysql-secret
   instances: 2
   router:
@@ -21,7 +21,7 @@ spec:
   backupProfiles:
     - name: s3-bkp
       dumpInstance:
-        dumpOptions:
+        dumpOptions: {}
         storage:
           s3:
             bucketName: raf-ojt-bucket 
@@ -32,7 +32,7 @@ spec:
   backupSchedules:
     - name: s3-bkp-schedule
       schedule: "*/5 * * * *" 
-      backupProfileName: s3-backup 
+      backupProfileName: s3-bkp 
       enabled: false  
   podSpec:                      # >> OK
     containers:
@@ -51,7 +51,8 @@ spec:
     binlog_expire_logs_seconds=14400  # 4hrs
     innodb_buffer_pool_size=1G
     max_allowed_packet=512M
-    
+    max_connections=120
+    innodb_print_all_deadlocks=1  # to be tested
 
 
 #=========================================================================================
@@ -84,3 +85,12 @@ spec:
 #   innodb_buffer_pool_instances     1
 # +-------------------------------+------------+
 
+
+# DELETING LEFTOVERS FORCE
+# kubectl get innodbclusters.mysql.oracle.com --all-namespaces
+# kubectl describe crd innodbclusters.mysql.oracle.com |y
+# kubectl describe crd innodbclusters.mysql.oracle.com | grep -in final
+# kubectl edit crd innodbclusters.mysql.oracle.com                          << remove finalizers
+
+# ORACLE REPO LIST:
+# https://container-registry.oracle.com/ords/f?p=113:1:109334631441539:::1:P1_BUSINESS_AREA:6&cs=3AEbxc-y2bqvgpCUkktb5gD_WRTxV21xlTYv1Dw8U1yd3lNI7ASe5Ba9fx4xnOZf8CnjHVVnKiTr8CE2X9kENGg

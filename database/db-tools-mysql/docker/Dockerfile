@@ -14,15 +14,24 @@ RUN rm mysql-shell_9.0.1-1ubuntu22.04_amd64.deb
 RUN apt-get install locales -y && locale-gen "en_US.UTF-8" && update-locale LANG=en_US.UTF-8 && update-locale LANGUAGE=en_US.UTF-8 && update-locale LC_ALL=en_US.UTF-8
 
 # install other utilities
-RUN apt-get install unzip tree htop telnet inetutils-ping vim python3 tmux jq sudo bat -y
+RUN apt-get install unzip tree htop telnet inetutils-ping vim python3 tmux jq sudo bat less lsb-release -y
 
 # Aws CLI
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && unzip awscliv2.zip && ./aws/install
 RUN rm awscliv2.zip
+RUN bash -c "complete -C '/aws/dist/aws_completer' aws"
+
+# Install xtrabackup
+RUN wget https://repo.percona.com/apt/percona-release_latest.$(lsb_release -sc)_all.deb
+RUN dpkg -i percona-release_latest.$(lsb_release -sc)_all.deb
+RUN percona-release enable-only tools release
+RUN apt install percona-xtrabackup-24 qpress -y
+RUN rm percona-release_latest.*.deb
 
 # Configure root
 RUN echo "ubuntu ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/sudoers_custom
 RUN echo "PS1='\[\033[0;31m\]\u@\h\[\033[00m\]:\[\033[01;94m\]\W\[\033[00m\]\# '" >> /root/.bashrc
+RUN echo "alias ll='ls -lh'" >> /root/.bashrc
 
 # Create a new user 'ubuntu' with a home directory
 RUN useradd -ms /bin/bash ubuntu
@@ -30,5 +39,10 @@ USER ubuntu
 WORKDIR /home/ubuntu
 RUN echo "PS1='\[\033[0;95m\]\u@\h\[\033[00m\]:\[\033[01;94m\]\W\[\033[00m\]\$ '" >> /home/ubuntu/.bashrc
 RUN echo 'export LANG="en_US.UTF-8" \nexport LANGUAGE="en_US.UTF-8" \nexport LC_ALL="en_US.UTF-8"' >> /home/ubuntu/.bashrc
-COPY RK_README.md .
+RUN echo "alias ll='ls -lh'" >> /home/ubuntu/.bashrc
+RUN echo "alias batcat='batcat -p --paging=never'" >> /home/ubuntu/.bashrc
+COPY RK_README.md .my.cnf .vimrc /home/ubuntu/
+COPY .mysqlsh/ /home/ubuntu/.mysqlsh/
+RUN sudo chown -R ubuntu:ubuntu /home/ubuntu/
+RUN aws configure set default.s3.max_concurrent_requests 4
 CMD ["sleep", "infinity"]
