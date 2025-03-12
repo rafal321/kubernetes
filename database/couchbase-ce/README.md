@@ -4,7 +4,9 @@ https://docs.couchbase.com/server/current/rest-api/rest-initialize-cluster.html
 couchbase logs:
 /opt/couchbase/var/lib/couchbase/logs/
 ----------------------
-Starting Couchbase Server -- Web UI available at http://<ip>:8091                                                                                           ││ and logs available in /opt/couchbase/var/lib/couchbase/logs
+Starting Couchbase Server -- Web UI available at http://<ip>:8091
+
+││ and logs available in /opt/couchbase/var/lib/couchbase/logs
 ----------------------
 apt update -y && apt install -y jq curl dnsutils vim
 cbdb commands:      https://docs.couchbase.com/server/current/cli/cbcli/couchbase-cli-bucket-list.html
@@ -140,9 +142,9 @@ couchbase-cli server-add \
   --server-add-password ${COUCHBASE_PASSWORD} \
   --services data,index,query
 
-ADD AFTER POD RESTART:
+ADD, AFTER POD RESTART:
 	  <new pod ip>
-echo "10.244.3.40" > /opt/couchbase/var/lib/couchbase/ip_start
+echo "10.244.3.40" > /opt/couchbase/var/lib/couchbase/ip_start		and then: couchbase-cli server-add
 
 couchbase-cli server-add -c cbdb-sts-0.cbdb-hsvc:8091 -u ${COUCHBASE_USERNAME} -p ${COUCHBASE_PASSWORD} --server-add http://$(hostname -i):8091 --server-add-username ${COUCHBASE_USERNAME} --server-add-password ${COUCHBASE_PASSWORD} --services data,index,query
 
@@ -214,3 +216,19 @@ echo ${COUCHBASE_PASSWORD} >> xxx2.txt
 fi
 EOF
 
+## ############################################################################
+## is port forward safe?	kubectl port-forward cbdb-sts-0 8091:8091
+
+Yes, the connection established using kubectl port-forward is encrypted and generally considered safe. When you run the command kubectl port-forward cbdb-sts-0 8091:8091, it creates a secure tunnel between your local machine and the Kubernetes cluster. This tunnel uses TLS (Transport Layer Security) encryption to protect the data in transit.
+
+The connection works as follows:
+    kubectl connects to one of the master nodes in your EKS cluster using an encrypted connection.
+    The Kubernetes API server then establishes a connection to the specified pod (cbdb-sts-0 in your case).
+    All traffic between your local machine and the pod is routed through this encrypted tunnel.
+This setup provides several security benefits:
+    Encryption: The entire communication path is encrypted using TLS.
+    Authentication: Kubernetes checks if you have the necessary permissions to perform the port-forwarding operation.
+    Limited exposure: The forwarded port is only accessible on your local machine by default, reducing the attack surface.
+
+However, it's important to note that while kubectl port-forward is secure, it's primarily intended for temporary access, debugging, and development purposes. For production environments or long-term access, it's generally recommended to use more robust solutions like properly configured Services, Ingresses, or API gateways.
+## ############################################################################

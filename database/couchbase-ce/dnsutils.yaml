@@ -8,4 +8,11 @@ spec:
   - name: dnsutils
     image: registry.k8s.io/e2e-test-images/agnhost:2.39
     imagePullPolicy: IfNotPresent
+    resources:
+      requests:
+        memory: "8Mi"
+        cpu: "2m"
+      limits:
+        memory: "16Mi"
+        cpu: "10m"
   restartPolicy: Always

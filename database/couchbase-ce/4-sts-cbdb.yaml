@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: couchbase-statefulset # cbdb-sts  raf change it to make it shorter 
+  name: cbdb-sts
 spec:
-  serviceName: couchbase-headless
+  serviceName: cbdb-hsvc
   replicas: 3
   selector:
     matchLabels:
@@ -18,13 +18,12 @@ spec:
           image: couchbase:community-7.6.2 # couchbase:community | community-7.6.2
           ports:
             - containerPort: 8091
-            # - containerPort: 18091
           resources:
             requests:
               memory: "2Gi"
               cpu: "500m"
             limits:
-              memory: "5Gi"
+              memory: "4Gi"
               cpu: "1"
           volumeMounts:
             - name: couchbase-pvc
@@ -37,14 +36,14 @@ spec:
                   key: COUCHBASE_USERNAME
             - name: COUCHBASE_PASSWORD
               valueFrom:
-                configMapKeyRef:
-                  name: couchbase-config
+                secretKeyRef:
+                  name: couchbase-secret
                   key: COUCHBASE_PASSWORD
-            - name: COUCHBASE_BUCKET_NAME
+            - name: COUCHBASE_CLUSTER_NAME
               valueFrom:
                 configMapKeyRef:
                   name: couchbase-config
-                  key: COUCHBASE_BUCKET_NAME
+                  key: COUCHBASE_CLUSTER_NAME
           lifecycle:
             postStart:
               exec:
@@ -54,24 +53,24 @@ spec:
                   - |
                     sleep 15 && \
                     # Check if this is the first pod (ordinal 0)
-                    if [ "${HOSTNAME}" == "couchbase-statefulset-0" ]; then
-                      # Initialize the cluster
-                      curl -u ${COUCHBASE_USERNAME}:${COUCHBASE_PASSWORD} -X POST \
-                      http://localhost:8091/pools/default \
-                      -H "Content-Type: application/json" \
-                      -d '{"clusterName": "'${COUCHBASE_CLUSTER_NAME}'"}'
-                      # Create a bucket
-                      curl -u ${COUCHBASE_USERNAME}:${COUCHBASE_PASSWORD} -X POST \
-                      http://localhost:8091/pools/default/buckets \
-                      -H "Content-Type: application/json" \
-                      -d '{"name": "'${COUCHBASE_BUCKET_NAME}'"}'
+                    if [ "${HOSTNAME}" = "cbdb-sts-0" ]; then
+                      echo ${COUCHBASE_CLUSTER_NAME} > z0_cluster.txt
+                      couchbase-cli cluster-init -c localhost:8091 \
+                      --cluster-username ${COUCHBASE_USERNAME} \
+                      --cluster-password ${COUCHBASE_PASSWORD} \
+                      --cluster-name ${COUCHBASE_CLUSTER_NAME} \
+                      --services data,index,query --cluster-ramsize 1024 --cluster-index-ramsize 512
                     else
                       # Join the cluster for other pods
-                      curl -u ${COUCHBASE_USERNAME}:${COUCHBASE_PASSWORD} -d 'clusterMemberHostIp=couchbase-statefulset-0.couchbase-headless.default.svc.cluster.local' \
-                      -d 'clusterMemberPort=8091' \
-                      -d 'user='${COUCHBASE_USERNAME} \
-                      -d 'password='${COUCHBASE_PASSWORD} \
-                      http://localhost:8091/node/controller/doJoinCluster
+                      echo ${COUCHBASE_CLUSTER_NAME} > z1_cluster.txt
+                      couchbase-cli server-add \
+                      -c cbdb-sts-0.cbdb-hsvc:8091 \
+                      -u ${COUCHBASE_USERNAME} \
+                      -p ${COUCHBASE_PASSWORD} \
+                      --server-add http://$(hostname -i):8091 \
+                      --server-add-username ${COUCHBASE_USERNAME} \
+                      --server-add-password ${COUCHBASE_PASSWORD} \
+                      --services data,index,query
                     fi
   volumeClaimTemplates:
     - metadata:
@@ -79,7 +78,7 @@ spec:
       spec:
         accessModes:
           - ReadWriteOnce
-        storageClassName: gp3-exp
+        storageClassName: gp3-exp  # gp3-exp | standard
         resources:
           requests:
-            storage: 6Gi
+            storage: 4Gi
