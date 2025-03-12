@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: couchbase-headless
+spec:
+  clusterIP: None
+  selector:
+    app: couchbase
+  ports:
+    - name: couchbase
+      port: 8091
+      targetPort: 8091
+    # - name: couchbase-https
+    #   port: 18091
+    #   targetPort: 18091

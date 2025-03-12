@@ -1,0 +1,137 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: cbdb-sts # couchbase-statefulset # cbdb-sts  raf change it to make it shorter 
+spec:
+  serviceName: cbdb-hsvc
+  replicas: 3
+  selector:
+    matchLabels:
+      app: couchbase
+  template:
+    metadata:
+      labels:
+        app: couchbase
+    spec:
+      containers:
+        - name: couchbase
+          image: couchbase:community-7.6.2 # couchbase:community | community-7.6.2
+          ports:
+            - containerPort: 8091
+            # - containerPort: 18091
+          resources:
+            requests:
+              memory: "2Gi"
+              cpu: "500m"
+            limits:
+              memory: "4Gi"
+              cpu: "1"
+          volumeMounts:
+            - name: couchbase-pvc
+              mountPath: /opt/couchbase/var
+          env:
+            - name: COUCHBASE_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: couchbase-config
+                  key: COUCHBASE_USERNAME
+            - name: COUCHBASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: couchbase-secret
+                  key: COUCHBASE_PASSWORD
+            - name: COUCHBASE_CLUSTER_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: couchbase-config
+                  key: COUCHBASE_CLUSTER_NAME
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  - |
+                    sleep 15 && \
+                    # Check if this is the first pod (ordinal 0)
+                    if [ "${HOSTNAME}" = "cbdb-sts-0" ]; then
+                      echo ${COUCHBASE_CLUSTER_NAME} > z0_cluster.txt
+                      couchbase-cli cluster-init -c localhost:8091 \
+                      --cluster-username ${COUCHBASE_USERNAME} \
+                      --cluster-password ${COUCHBASE_PASSWORD} \
+                      --cluster-name ${COUCHBASE_CLUSTER_NAME} \
+                      --services data,index,query --cluster-ramsize 1024 --cluster-index-ramsize 512
+                    else
+                      # Join the cluster for other pods
+                      echo ${COUCHBASE_CLUSTER_NAME} > z1_cluster.txt
+                      couchbase-cli server-add \
+                      -c cbdb-sts-0.cbdb-hsvc.default.svc.cluster.local:8091 \
+                      -u ${COUCHBASE_USERNAME} \
+                      -p ${COUCHBASE_PASSWORD} \
+                      --server-add http://$(hostname -i):8091 \
+                      --server-add-username ${COUCHBASE_USERNAME} \
+                      --server-add-password ${COUCHBASE_PASSWORD} \
+                      --services data,index,query
+                    fi
+  volumeClaimTemplates:
+    - metadata:
+        name: couchbase-pvc
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: standard # gp3-exp
+        resources:
+          requests:
+            storage: 2Gi
+
+          # lifecycle:
+          #   postStart:
+          #     exec:
+          #       command:
+          #         - /bin/sh
+          #         - -c
+          #         - |
+          #           sleep 10 && \
+          #           # Check if this is the first pod (ordinal 0)
+          #           if [ "${HOSTNAME}" == "couchbase-statefulset-0" ]; then
+          #             # Initialize the cluster
+          #             curl -u ${COUCHBASE_USERNAME}:${COUCHBASE_PASSWORD} -X POST \
+          #             http://localhost:8091/pools/default \
+          #             -H "Content-Type: application/json" \
+          #             -d '{"clusterName": "'${COUCHBASE_CLUSTER_NAME}'"}'
+          #             # Create a bucket
+          #             curl -u ${COUCHBASE_USERNAME}:${COUCHBASE_PASSWORD} -X POST \
+          #             http://localhost:8091/pools/default/buckets \
+          #             -H "Content-Type: application/json" \
+          #             -d '{"name": "'${COUCHBASE_BUCKET_NAME}'"}'
+          #           else
+          #             # Join the cluster for other pods
+          #             curl -u ${COUCHBASE_USERNAME}:${COUCHBASE_PASSWORD} -d 'clusterMemberHostIp=couchbase-statefulset-0.couchbase-headless.default.svc.cluster.local' \
+          #             -d 'clusterMemberPort=8091' \
+          #             -d 'user='${COUCHBASE_USERNAME} \
+          #             -d 'password='${COUCHBASE_PASSWORD} \
+          #             http://localhost:8091/node/controller/doJoinCluster
+          #           fi
+
+
+          # lifecycle:
+          #   postStart:
+          #     exec:
+          #       command:
+          #         - /bin/sh
+          #         - -c
+          #         - |
+          #           sleep 10 && \
+          #           # Check if this is the first pod (ordinal 0)
+          #           if [ "${HOSTNAME}" = "cbdb-sts-0" ]; then
+          #             echo x1 > x1.txt
+          #             echo ${HOSTNAME} >> x1.txt
+          #             echo ${COUCHBASE_USERNAME} >> x1.txt
+          #             echo ${COUCHBASE_PASSWORD} >> x1.txt
+          #           else
+          #             # Join the cluster for other pods
+          #             echo y2 > y2.txt
+          #             echo ${HOSTNAME} >> y2.txt
+          #             echo ${COUCHBASE_USERNAME} >> y2.txt
+          #             echo ${COUCHBASE_PASSWORD} >> y2.txt
+          #           fi

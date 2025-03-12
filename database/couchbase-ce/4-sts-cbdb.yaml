@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: couchbase-statefulset # cbdb-sts  raf change it to make it shorter 
+spec:
+  serviceName: couchbase-headless
+  replicas: 3
+  selector:
+    matchLabels:
+      app: couchbase
+  template:
+    metadata:
+      labels:
+        app: couchbase
+    spec:
+      containers:
+        - name: couchbase
+          image: couchbase:community-7.6.2 # couchbase:community | community-7.6.2
+          ports:
+            - containerPort: 8091
+            # - containerPort: 18091
+          resources:
+            requests:
+              memory: "2Gi"
+              cpu: "500m"
+            limits:
+              memory: "5Gi"
+              cpu: "1"
+          volumeMounts:
+            - name: couchbase-pvc
+              mountPath: /opt/couchbase/var
+          env:
+            - name: COUCHBASE_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: couchbase-config
+                  key: COUCHBASE_USERNAME
+            - name: COUCHBASE_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: couchbase-config
+                  key: COUCHBASE_PASSWORD
+            - name: COUCHBASE_BUCKET_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: couchbase-config
+                  key: COUCHBASE_BUCKET_NAME
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  - |
+                    sleep 15 && \
+                    # Check if this is the first pod (ordinal 0)
+                    if [ "${HOSTNAME}" == "couchbase-statefulset-0" ]; then
+                      # Initialize the cluster
+                      curl -u ${COUCHBASE_USERNAME}:${COUCHBASE_PASSWORD} -X POST \
+                      http://localhost:8091/pools/default \
+                      -H "Content-Type: application/json" \
+                      -d '{"clusterName": "'${COUCHBASE_CLUSTER_NAME}'"}'
+                      # Create a bucket
+                      curl -u ${COUCHBASE_USERNAME}:${COUCHBASE_PASSWORD} -X POST \
+                      http://localhost:8091/pools/default/buckets \
+                      -H "Content-Type: application/json" \
+                      -d '{"name": "'${COUCHBASE_BUCKET_NAME}'"}'
+                    else
+                      # Join the cluster for other pods
+                      curl -u ${COUCHBASE_USERNAME}:${COUCHBASE_PASSWORD} -d 'clusterMemberHostIp=couchbase-statefulset-0.couchbase-headless.default.svc.cluster.local' \
+                      -d 'clusterMemberPort=8091' \
+                      -d 'user='${COUCHBASE_USERNAME} \
+                      -d 'password='${COUCHBASE_PASSWORD} \
+                      http://localhost:8091/node/controller/doJoinCluster
+                    fi
+  volumeClaimTemplates:
+    - metadata:
+        name: couchbase-pvc
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: gp3-exp
+        resources:
+          requests:
+            storage: 6Gi
