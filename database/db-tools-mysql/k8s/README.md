@@ -27,5 +27,5 @@ kubectl create sa s3-full-access-sa -n your-namespace
 
 [4] Create a Pod Identity association:	(Command Not found on my system -> use UI console)
 ```
-aws eks create-pod-identity-association --cluster-name dev-rkeks12-02 --namespace db-tools --service-account s3-full-access-sa --role-arn arn:aws:iam::411929112137:role/EKSPodS3FullAccess --profile lab
+aws eks create-pod-identity-association --cluster-name dev-rkeks12-02 --namespace db-tools --service-account s3-full-access-sa --role-arn arn:aws:iam::<ACC_NUM>:role/EKSPodS3FullAccess --profile lab
 ```
