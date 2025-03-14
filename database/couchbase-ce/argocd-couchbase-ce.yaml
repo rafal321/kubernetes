@@ -3,7 +3,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: couchbase-ce
-  namespace: couchbase-ce
+#  namespace: couchbase-ce
   finalizers:
     - resources-finalizer.argocd.argoproj.io  # terminate app first before deleting argocd application (cleanup)
 spec:
