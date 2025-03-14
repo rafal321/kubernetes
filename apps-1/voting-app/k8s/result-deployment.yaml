@@ -2,27 +2,25 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: redis
-  name: redis
+    app: result
+  name: result
+  namespace: voting-app
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: redis
+      app: result
   template:
     metadata:
       labels:
-        app: redis
+        app: result
     spec:
       containers:
-      - image: redis:alpine
-        name: redis
+      - image: dockersamples/examplevotingapp_result
+        name: result
         ports:
-        - containerPort: 6379
-          name: redis
-        volumeMounts:
-        - mountPath: /data
-          name: redis-data
+        - containerPort: 80
+          name: result
         resources:
           requests:
             cpu: 50m
@@ -30,6 +28,5 @@ spec:
           limits:
             cpu: 100m
             memory: 200Mi
-      volumes:
-      - name: redis-data
-        emptyDir: {} 
+
+# response with delay
