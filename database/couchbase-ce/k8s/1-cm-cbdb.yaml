@@ -12,6 +12,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: couchbase-secret
+  namespace: couchbase-ce
 type: Opaque
 data:
   COUCHBASE_PASSWORD: cGFzc3dvcmQ=
