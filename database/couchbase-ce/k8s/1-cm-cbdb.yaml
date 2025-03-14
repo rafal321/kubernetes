@@ -3,6 +3,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: couchbase-config
+  namespace: couchbase-ce
 data:
   COUCHBASE_USERNAME: "Administrator"
   COUCHBASE_CLUSTER_NAME: "cbdb-123"
