@@ -5,7 +5,7 @@ metadata:
   name: db-tools-mysql
   namespace: argocd
   finalizers:
-    - resources-finalizer.argocd.argoproj.io  # terminate app first before deleting argocd application (cleanup)
+    - resources-finalizer.argocd.argoproj.io/db-tools-mysql  # terminate app first before deleting argocd application (cleanup)
 spec:
   project: default
   source:
