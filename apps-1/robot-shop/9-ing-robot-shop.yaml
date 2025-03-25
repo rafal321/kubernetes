@@ -24,7 +24,7 @@ metadata:
     alb.ingress.kubernetes.io/group.order: '52'
 spec:
   rules:  
-    - host: robot-shop.ops.perf.openjawhosting.com
+    - host: robot-shop.ops.perf.hosting.com
       http:
         paths:
           - path: /

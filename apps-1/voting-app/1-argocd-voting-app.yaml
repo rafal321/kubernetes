@@ -5,7 +5,7 @@ metadata:
   name: voting-app
   namespace: argocd
   finalizers:
-    - resources-finalizer.argocd.argoproj.io/voting-app
+    - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   source:

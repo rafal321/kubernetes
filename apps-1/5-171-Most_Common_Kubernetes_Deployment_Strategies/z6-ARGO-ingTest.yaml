@@ -21,7 +21,7 @@ metadata:
   # alb.ingress.kubernetes.io/group.order: '0'
 spec:
   rules:
-    - host: argosquares-test.ops.perf.openjawhosting.com
+    - host: argosquares-test.ops.perf.hosting.com
       http:
         paths:
           - path: /
