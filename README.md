@@ -16,7 +16,7 @@ helm uninstall metrics-server --namespace kube-system
 ```
 kubectl apply -f https://github.com/aws-containers/retail-store-sample-app/releases/latest/download/kubernetes.yaml
 ```
-### prometheus, graphana stack
+### prometheus, grafana
 ```bash
 echo -n 'adminuser' > ./admin-user # change your username
 echo -n 'p@ssword!' > ./admin-password # change your password
@@ -27,6 +27,7 @@ vi values.yaml
 # - - - -
 helm install -n monitoring prometheus prometheus-community/kube-prometheus-stack -f values.yaml
 kubectl port-forward services/grafana 8080:80
+kubectl port-forward services/prometheus-prometheus 8081:9090
 
 # if you need to update
 helm upgrade -n monitoring prometheus prometheus-community/kube-prometheus-stack -f values.yaml
