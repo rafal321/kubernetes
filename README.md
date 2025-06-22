@@ -27,4 +27,7 @@ vi values.yaml
 # - - - -
 helm install -n monitoring prometheus prometheus-community/kube-prometheus-stack -f values.yaml
 kubectl port-forward services/grafana 8080:80
+
+# if you need to update
+helm upgrade -n monitoring prometheus prometheus-community/kube-prometheus-stack -f values.yaml
 ```
