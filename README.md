@@ -30,4 +30,7 @@ kubectl port-forward services/grafana 8080:80
 
 # if you need to update
 helm upgrade -n monitoring prometheus prometheus-community/kube-prometheus-stack -f values.yaml
+
+# to see values
+helm show values prometheus-community/kube-prometheus-stack > default_values.yaml
 ```
