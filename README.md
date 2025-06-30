@@ -35,4 +35,5 @@ helm upgrade -n monitoring prometheus prometheus-community/kube-prometheus-stack
 # to see values
 helm show values prometheus-community/kube-prometheus-stack > default_values.yaml
 ```
+[Beautiful Dashboards with Grafana and Prometheus...](https://technotim.live/posts/kube-grafana-prometheus/)
 [Kubernetes Monitoring Made Easy with Prometheus | KodeKloud](https://www.youtube.com/watch?v=6xmWr7p5TE0&t=613s)
