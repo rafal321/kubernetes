@@ -11,6 +11,21 @@ helm install metrics-server metrics-server/metrics-server --namespace kube-syste
 
 helm uninstall metrics-server --namespace kube-system
 ```
+### LBC
+```
+helm repo add eks https://aws.github.io/eks-charts
+helm repo update eks
+helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
+-n kube-system \
+--set clusterName=<Cluster_Name> \
+--set region=<region> \
+--set vpcId=<vpc-id> \
+--set serviceAccount.create=true \
+--set serviceAccount.name=aws-load-balancer-controller
+
+helm uninstall aws-load-balancer-controller --namespace kube-system
+```
+
 
 ### Sample app
 ```
