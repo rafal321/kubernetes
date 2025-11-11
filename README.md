@@ -11,6 +11,11 @@ helm install metrics-server metrics-server/metrics-server --namespace kube-syste
 
 helm uninstall metrics-server --namespace kube-system
 ```
+```
+# Another option
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+```
+
 ### LBC
 ```
 helm repo add eks https://aws.github.io/eks-charts
