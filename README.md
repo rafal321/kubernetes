@@ -1,4 +1,4 @@
-## handy charts
+## handy charts X
 ```
 helm install metrics-server metrics-server/metrics-server --namespace kube-system --set "args={--kubelet-insecure-tls}"
 helm install metrics-server metrics-server/metrics-server --namespace kube-system --set "args={--kubelet-insecure-tls}" \
