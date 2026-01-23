@@ -30,7 +30,12 @@ helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
 
 helm uninstall aws-load-balancer-controller --namespace kube-system
 ```
-
+### ARGOCD
+```bash
+kubectl create namespace argocd
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+kubectl -n argocd get secret/argocd-initial-admin-secret -oyaml | grep password | awk '{print $NF}' | base64 -d ; echo
+```
 
 ### Sample app
 ```
